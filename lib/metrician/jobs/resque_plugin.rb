@@ -33,6 +33,7 @@ module Metrician
 
       module Installer
         def self.included(base)
+          puts "---- This is a message about being included ----"
           base.send(:alias_method, :payload_class_without_metrician, :payload_class)
           base.send(:alias_method, :payload_class, :payload_class_with_metrician)
         end
