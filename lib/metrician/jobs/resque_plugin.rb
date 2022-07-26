@@ -32,14 +32,8 @@ module Metrician
       end
 
       module Installer
-        def self.included(base)
-          puts "---- This is a message about being included ----"
-          base.send(:alias_method, :payload_class_without_metrician, :payload_class)
-          base.send(:alias_method, :payload_class, :payload_class_with_metrician)
-        end
-
-        def payload_class_with_metrician
-          payload_class_without_metrician.tap do |klass|
+        def payload_class
+          super.tap do |klass|
             unless klass.respond_to?(:around_perform_with_metrician)
               klass.instance_eval do
                 extend(::Metrician::Jobs::ResquePlugin::Extension)

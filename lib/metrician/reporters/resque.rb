@@ -8,8 +8,8 @@ module Metrician
 
     def instrument
       require "metrician/jobs/resque_plugin"
-      unless ::Resque::Job.method_defined?(:payload_class_with_metrician)
-        ::Resque::Job.send(:include, Metrician::Jobs::ResquePlugin::Installer)
+      unless ::Resque::Job.ancestors.include?(Metrician::Jobs::ResquePlugin::Installer)
+        ::Resque::Job.prepend(Metrician::Jobs::ResquePlugin::Installer)
       end
     end
 
