@@ -18,11 +18,13 @@ module Metrician
   end
 
   module NetHttpReporterMethods
-    start_time = Time.now
-    begin
-      super
-    ensure
-      Metrician.gauge(Metrician::NetHttp::REQUEST_METRIC, (Time.now - start_time).to_f) if Metrician.configuration[:external_service][:request][:enabled]
+    def call(req, body = nil, &block)
+      start_time = Time.now
+      begin
+        super
+      ensure
+        Metrician.gauge(Metrician::NetHttp::REQUEST_METRIC, (Time.now - start_time).to_f) if Metrician.configuration[:external_service][:request][:enabled]
+      end
     end
   end
 end
