@@ -11,20 +11,18 @@ module Metrician
     end
 
     def instrument
-      return if ::Net::HTTP.method_defined?(:request_with_metrician_time)
-      ::Net::HTTP.class_eval do
-        def request_with_metrician_time(req, body = nil, &block)
-          start_time = Time.now
-          begin
-            request_without_metrician_time(req, body, &block)
-          ensure
-            Metrician.gauge(REQUEST_METRIC, (Time.now - start_time).to_f) if Metrician.configuration[:external_service][:request][:enabled]
-          end
-        end
-        alias_method :request_without_metrician_time, :request
-        alias_method :request, :request_with_metrician_time
-      end
+      return if ::Net::HTTP.ancestors.include?(Metrician::NetHttpReporterMethods)
+      ::Net::HTTP.prepend(Metrician::NetHttpReporterMethods)
     end
 
+  end
+
+  module NetHttpReporterMethods
+    start_time = Time.now
+    begin
+      request_without_metrician_time(req, body, &block)
+    ensure
+      Metrician.gauge(Metrician::NetHttp::REQUEST_METRIC, (Time.now - start_time).to_f) if Metrician.configuration[:external_service][:request][:enabled]
+    end
   end
 end
