@@ -22,10 +22,10 @@ module Metrician
         super
       ensure
         duration = (Time.now - start_time).to_f
-        Metrician.gauge(CACHE_METRIC, duration) if Metrician.configuration[:cache][:command][:enabled]
+        Metrician.gauge(Metrician::Redis::CACHE_METRIC, duration) if Metrician.configuration[:cache][:command][:enabled]
         if Metrician.configuration[:cache][:command_specific][:enabled]
           method_name = args[0].is_a?(Array) ? args[0][0] : args[0]
-          Metrician.gauge("#{CACHE_METRIC}.#{method_name}", duration)
+          Metrician.gauge("#{Metrician::Redis::CACHE_METRIC}.#{method_name}", duration)
         end
       end
     end
