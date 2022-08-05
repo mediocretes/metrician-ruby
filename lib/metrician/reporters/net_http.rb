@@ -20,7 +20,7 @@ module Metrician
   module NetHttpReporterMethods
     start_time = Time.now
     begin
-      request_without_metrician_time(req, body, &block)
+      super
     ensure
       Metrician.gauge(Metrician::NetHttp::REQUEST_METRIC, (Time.now - start_time).to_f) if Metrician.configuration[:external_service][:request][:enabled]
     end
